@@ -3,26 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crazy Chess</title>
+    <title>Sketch Chess</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Caveat', cursive; background: #f5f5f5; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 10px; }
-        .container { background: white; padding: 20px; border: 3px solid black; box-shadow: 3px 3px 0px rgba(0,0,0,0.3); max-width: 95vw; }
-        .mode-selector { text-align: center; margin-bottom: 20px; padding: 15px; border: 2px solid black; background: #fafafa; }
+        .container { background: white; padding: 20px; border: 3px solid black; box-shadow: 3px 3px 0px rgba(0,0,0,0.3); max-width: 95vw; filter: url(#scribble); }
+        .mode-selector { text-align: center; margin-bottom: 20px; padding: 15px; border: 2px solid black; background: #fafafa; filter: url(#scribble); }
         .mode-selector h3 { font-size: 18px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
         .mode-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-        .mode-btn { padding: 10px 20px; font-family: 'Caveat', cursive; font-size: 16px; font-weight: 700; background: white; border: 2px solid black; cursor: pointer; transition: all 0.1s; }
+        .mode-btn { padding: 10px 20px; font-family: 'Caveat', cursive; font-size: 16px; font-weight: 700; background: white; border: 2px solid black; cursor: pointer; transition: all 0.1s; filter: url(#scribble); }
         .mode-btn:hover { transform: scale(1.05); box-shadow: 2px 2px 0px rgba(0,0,0,0.2); }
         .mode-btn.active { background: #fffacd; border: 3px solid black; }
         .header { text-align: center; margin-bottom: 15px; }
-        .status-text { font-size: 28px; font-weight: 700; color: black; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; }
+        .status-text { font-size: 28px; font-weight: 700; color: black; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; text-shadow: 1px 1px 0px rgba(0,0,0,0.1); font-style: italic; }
         .button-group { display: flex; gap: 10px; margin-bottom: 15px; }
         button { flex: 1; padding: 12px; font-family: 'Caveat', cursive; font-size: 18px; font-weight: 700; background: white; border: 2px solid black; cursor: pointer; transition: all 0.1s; letter-spacing: 1px; }
         button:hover { transform: scale(1.05); box-shadow: 2px 2px 0px rgba(0,0,0,0.2); }
         .board-wrapper { display: flex; justify-content: center; margin-bottom: 15px; }
-        .board { display: grid; grid-template-columns: repeat(8, 50px); grid-template-rows: repeat(8, 50px); gap: 0; border: 3px solid black; background: white; }
-        .square { width: 50px; height: 50px; display: flex; justify-content: center; align-items: center; font-size: 32px; cursor: pointer; user-select: none; font-weight: bold; }
+        .board { display: grid; grid-template-columns: repeat(8, 50px); grid-template-rows: repeat(8, 50px); gap: 0; border: 3px solid black; background: white; box-shadow: 4px 4px 0px rgba(0,0,0,0.3); }
+        .square { width: 50px; height: 50px; display: flex; justify-content: center; align-items: center; font-size: 32px; cursor: pointer; user-select: none; font-weight: bold; position: relative; }
         .square.light { background: #fafafa; }
         .square.dark { background: #e0e0e0; }
         .square.selected { background: #fffacd !important; border: 2px solid black !important; }
@@ -31,14 +31,14 @@
         .square.legal-capture { border: 2px solid #cc2222 !important; }
         .square.check-king { animation: check-pulse 0.5s infinite alternate; }
         @keyframes check-pulse { from { background: #ffeeee !important; } to { background: #ffe0e0 !important; } }
-        .piece { z-index: 2; }
-        .info-box { margin-top: 15px; padding: 10px; border: 2px solid black; background: #fafafa; font-size: 12px; font-family: monospace; max-height: 80px; overflow-y: auto; text-align: center; }
+        .piece { z-index: 2; filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.2)); position: relative; }
+        .info-box { margin-top: 15px; padding: 10px; border: 2px solid black; background: #fafafa; font-size: 12px; font-family: monospace; max-height: 80px; overflow-y: auto; text-align: center; filter: url(#scribble); }
         .info-box-title { font-family: 'Caveat', cursive; font-size: 14px; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px; }
         .move-log { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; }
-        .move-item { background: white; padding: 3px 6px; border: 1px solid black; font-size: 11px; font-family: monospace; }
+        .move-item { background: white; padding: 3px 6px; border: 1px solid black; font-size: 11px; font-family: monospace; filter: url(#scribble); }
         .promotion-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 999; display: none; justify-content: center; align-items: center; }
         .promotion-overlay.active { display: flex; }
-        .promotion-dialog { background: white; padding: 30px; border: 4px solid black; box-shadow: 5px 5px 0px rgba(0,0,0,0.3); text-align: center; }
+        .promotion-dialog { background: white; padding: 30px; border: 4px solid black; box-shadow: 5px 5px 0px rgba(0,0,0,0.3); text-align: center; filter: url(#scribble); }
         .promotion-title { font-size: 24px; font-weight: 700; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; font-family: 'Caveat', cursive; }
         .promotion-options { display: grid; grid-template-columns: repeat(4, 80px); gap: 10px; }
         .promotion-option { width: 80px; height: 80px; font-size: 50px; border: 3px solid black; background: white; cursor: pointer; transition: all 0.1s; display: flex; justify-content: center; align-items: center; }
@@ -46,12 +46,28 @@
     </style>
 </head>
 <body>
+    <svg width="0" height="0">
+        <defs>
+            <filter id="scribble">
+                <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" result="noise" seed="2" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.2" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
+        </defs>
+    </svg>
+
     <div class="container">
         <div class="mode-selector">
             <h3>Game Mode</h3>
             <div class="mode-buttons">
                 <button class="mode-btn active" id="pvpBtn">👥 Player vs Player</button>
                 <button class="mode-btn" id="aiBtn">🤖 vs Computer</button>
+            </div>
+            <div style="text-align: center; margin-top: 10px;">
+                <label><input type="checkbox" id="stockfishToggle"> Use Stockfish AI</label>
+            </div>
+            <div class="difficulty-selector" id="difficultyDiv" style="display: none; margin-top: 10px;">
+                <label for="difficulty">Difficulty: <span id="difficultyLabel">5</span></label>
+                <input type="range" id="difficulty" min="1" max="20" value="5">
             </div>
         </div>
 
@@ -80,6 +96,7 @@
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js"></script>
     <script>
         const PIECE_TYPES = { PAWN: 'P', KNIGHT: 'N', BISHOP: 'B', ROOK: 'R', QUEEN: 'Q', KING: 'K' };
         const COLORS = { WHITE: 'w', BLACK: 'b' };
@@ -113,6 +130,9 @@
         let kingInCheckColor = null;
         let gameMode = 'pvp';
         let aiThinking = false;
+        let stockfish = null;
+        let aiDifficulty = 5;
+        let useStockfish = false;
 
         function posToCoord(pos) { return { file: pos % 8, rank: Math.floor(pos / 8) }; }
         function coordToPos(file, rank) { return rank * 8 + file; }
@@ -222,7 +242,10 @@
                     }
                 }
             } else if (type === PIECE_TYPES.BISHOP || type === PIECE_TYPES.ROOK || type === PIECE_TYPES.QUEEN) {
-                const directions = type === PIECE_TYPES.BISHOP ? [[-1,-1],[-1,1],[1,-1],[1,1]] : type === PIECE_TYPES.ROOK ? [[0,-1],[0,1],[-1,0],[1,0]] : [[0,-1],[0,1],[-1,0],[1,0],[-1,-1],[-1,1],[1,-1],[1,1]];
+                const directions = 
+                    type === PIECE_TYPES.BISHOP ? [[-1,-1],[-1,1],[1,-1],[1,1]] :
+                    type === PIECE_TYPES.ROOK ? [[0,-1],[0,1],[-1,0],[1,0]] :
+                    [[0,-1],[0,1],[-1,0],[1,0],[-1,-1],[-1,1],[1,-1],[1,1]];
                 for (let [df, dr] of directions) {
                     for (let i = 1; i < 8; i++) {
                         const nf = file + df * i, nr = rank + dr * i;
@@ -271,6 +294,217 @@
                 }
                 return !isKingInCheck(testBoard, color);
             });
+        }
+
+        function getPieceValue(piece) {
+            if (!piece) return 0;
+            const values = { 'P': 1, 'N': 3, 'B': 3, 'R': 5, 'Q': 9, 'K': 0 };
+            return values[piece[1]] || 0;
+        }
+
+        function evaluateBoard(testBoard) {
+            let score = 0;
+            for (let i = 0; i < testBoard.length; i++) {
+                const piece = testBoard[i];
+                if (!piece) continue;
+                const value = getPieceValue(piece);
+                score += piece[0] === COLORS.WHITE ? value : -value;
+            }
+            for (let i = 0; i < testBoard.length; i++) {
+                const piece = testBoard[i];
+                if (!piece || piece[1] === PIECE_TYPES.KING) continue;
+                const canBeCaptured = isSquareAttackedBy(testBoard, i, piece[0] === COLORS.WHITE ? COLORS.BLACK : COLORS.WHITE);
+                if (canBeCaptured) {
+                    const value = getPieceValue(piece);
+                    if (piece[0] === COLORS.BLACK) {
+                        score -= value * 3;
+                    } else {
+                        score += value * 3;
+                    }
+                }
+            }
+            return score;
+        }
+
+        function minimax(testBoard, depth, isMaximizing, alpha, beta) {
+            if (depth === 0) return evaluateBoard(testBoard);
+            const player = isMaximizing ? COLORS.BLACK : COLORS.WHITE;
+            let bestScore = isMaximizing ? -Infinity : Infinity;
+            let movesFound = false;
+            const allMoves = [];
+            for (let pos = 0; pos < 64; pos++) {
+                const piece = testBoard[pos];
+                if (!piece || piece[0] !== player) continue;
+                const moves = generateMovesForPiece(pos, testBoard, null);
+                for (let move of moves) {
+                    const newBoard = testBoard.slice();
+                    newBoard[move.from] = null;
+                    newBoard[move.to] = testBoard[move.from];
+                    if (move.isEnPassant) {
+                        const capturePos = player === COLORS.WHITE ? move.to + 8 : move.to - 8;
+                        newBoard[capturePos] = null;
+                    }
+                    if (!isKingInCheck(newBoard, player)) {
+                        move.from = pos;
+                        move.score = 0;
+                        if (testBoard[move.to]) {
+                            move.score += getPieceValue(testBoard[move.to]) * 100;
+                        }
+                        if (isKingInCheck(newBoard, player === COLORS.WHITE ? COLORS.BLACK : COLORS.WHITE)) {
+                            move.score += 50;
+                        }
+                        allMoves.push(move);
+                    }
+                }
+            }
+            allMoves.sort((a, b) => b.score - a.score);
+            for (let move of allMoves) {
+                movesFound = true;
+                const newBoard = testBoard.slice();
+                newBoard[move.from] = null;
+                newBoard[move.to] = testBoard[move.from];
+                if (move.isEnPassant) {
+                    const capturePos = player === COLORS.WHITE ? move.to + 8 : move.to - 8;
+                    newBoard[capturePos] = null;
+                }
+                const score = minimax(newBoard, depth - 1, !isMaximizing, alpha, beta);
+                if (isMaximizing) {
+                    bestScore = Math.max(score, bestScore);
+                    alpha = Math.max(alpha, bestScore);
+                } else {
+                    bestScore = Math.min(score, bestScore);
+                    beta = Math.min(beta, bestScore);
+                }
+                if (beta <= alpha) break;
+            }
+            if (!movesFound) {
+                return isKingInCheck(testBoard, player) ? (isMaximizing ? -10000 : 10000) : 0;
+            }
+            return bestScore === Infinity || bestScore === -Infinity ? 0 : bestScore;
+        }
+
+        function boardToFEN() {
+            let fen = '';
+            for (let rank = 0; rank < 8; rank++) {
+                let emptyCount = 0;
+                for (let file = 0; file < 8; file++) {
+                    const piece = board[coordToPos(file, rank)];
+                    if (!piece) {
+                        emptyCount++;
+                    } else {
+                        if (emptyCount) {
+                            fen += emptyCount;
+                            emptyCount = 0;
+                        }
+                        fen += piece[0] === COLORS.WHITE ? piece[1] : piece[1].toLowerCase();
+                    }
+                }
+                if (emptyCount) fen += emptyCount;
+                if (rank < 7) fen += '/';
+            }
+            fen += currentPlayer === COLORS.WHITE ? ' w ' : ' b ';
+            fen += '- - 0 1';
+            return fen;
+        }
+
+        async function getStockfishMove() {
+            if (!stockfish) return null;
+            aiThinking = true;
+            return new Promise((resolve) => {
+                const fen = boardToFEN();
+                let bestMove = null;
+                const handler = (line) => {
+                    if (line.startsWith('bestmove')) {
+                        stockfish.removeEventListener('message', handler);
+                        const parts = line.split(' ');
+                        bestMove = parts[1];
+                        resolve(bestMove);
+                    }
+                };
+                stockfish.addEventListener('message', handler);
+                stockfish.postMessage('position fen ' + fen);
+                stockfish.postMessage('go depth ' + aiDifficulty);
+            });
+        }
+
+        function uciToMove(uci) {
+            const from = (uci.charCodeAt(0) - 97) + (8 - parseInt(uci[1])) * 8;
+            const to = (uci.charCodeAt(2) - 97) + (8 - parseInt(uci[3])) * 8;
+            return { from, to, promotion: uci[4] || null };
+        }
+
+        async function makeStockfishMove() {
+            const uci = await getStockfishMove();
+            if (!uci || uci === '0000') return;
+            const moveData = uciToMove(uci);
+            const moves = generateMovesForPiece(moveData.from);
+            const move = moves.find(m => m.to === moveData.to);
+            if (move) {
+                if (move.isPromotion) {
+                    promotionData = move;
+                    promotionData.pieceType = moveData.promotion ? moveData.promotion.toUpperCase() : PIECE_TYPES.QUEEN;
+                    promoteAndMove(promotionData.pieceType);
+                } else {
+                    executeMove(move);
+                }
+            }
+            aiThinking = false;
+        }
+
+        function findBestMove() {
+            aiThinking = true;
+            setTimeout(() => {
+                const isBlackInCheck = isKingInCheck(board, COLORS.BLACK);
+                if (isBlackInCheck) {
+                    for (let pos = 0; pos < 64; pos++) {
+                        const piece = board[pos];
+                        if (!piece || piece[0] !== COLORS.BLACK) continue;
+                        const moves = generateMovesForPiece(pos);
+                        for (let move of moves) {
+                            const testBoard = board.slice();
+                            testBoard[move.from] = null;
+                            testBoard[move.to] = piece;
+                            if (move.isEnPassant) testBoard[move.to + 8] = null;
+                            if (!isKingInCheck(testBoard, COLORS.BLACK)) {
+                                move.from = pos;
+                                executeMove(move);
+                                aiThinking = false;
+                                return;
+                            }
+                        }
+                    }
+                    aiThinking = false;
+                    return;
+                }
+                let bestScore = -Infinity;
+                let bestMove = null;
+                for (let pos = 0; pos < 64; pos++) {
+                    const piece = board[pos];
+                    if (!piece || piece[0] !== COLORS.BLACK) continue;
+                    const moves = generateMovesForPiece(pos);
+                    for (let move of moves) {
+                        const testBoard = board.slice();
+                        testBoard[move.from] = null;
+                        testBoard[move.to] = board[move.from];
+                        if (move.isEnPassant) {
+                            const capturePos = move.to + 8;
+                            testBoard[capturePos] = null;
+                        }
+                        if (!isKingInCheck(testBoard, COLORS.BLACK)) {
+                            const score = minimax(testBoard, 3, true, -Infinity, Infinity);
+                            if (score > bestScore) {
+                                bestScore = score;
+                                bestMove = move;
+                                bestMove.from = pos;
+                            }
+                        }
+                    }
+                }
+                if (bestMove) {
+                    executeMove(bestMove);
+                }
+                aiThinking = false;
+            }, 250);
         }
 
         function handleSquareClick(pos) {
@@ -464,54 +698,6 @@
 
         function hidePromotionDialog() {
             document.getElementById('promotionOverlay').classList.remove('active');
-        }
-
-        function findBestMove() {
-            aiThinking = true;
-            setTimeout(() => {
-                const isBlackInCheck = isKingInCheck(board, COLORS.BLACK);
-                if (isBlackInCheck) {
-                    for (let pos = 0; pos < 64; pos++) {
-                        const piece = board[pos];
-                        if (!piece || piece[0] !== COLORS.BLACK) continue;
-                        const moves = generateMovesForPiece(pos);
-                        for (let move of moves) {
-                            const testBoard = board.slice();
-                            testBoard[move.from] = null;
-                            testBoard[move.to] = piece;
-                            if (move.isEnPassant) testBoard[move.to + 8] = null;
-                            if (!isKingInCheck(testBoard, COLORS.BLACK)) {
-                                move.from = pos;
-                                executeMove(move);
-                                aiThinking = false;
-                                return;
-                            }
-                        }
-                    }
-                    aiThinking = false;
-                    return;
-                }
-                let bestMove = null;
-                for (let pos = 0; pos < 64; pos++) {
-                    const piece = board[pos];
-                    if (!piece || piece[0] !== COLORS.BLACK) continue;
-                    const moves = generateMovesForPiece(pos);
-                    for (let move of moves) {
-                        const testBoard = board.slice();
-                        testBoard[move.from] = null;
-                        testBoard[move.to] = board[move.from];
-                        if (move.isEnPassant) testBoard[move.to + 8] = null;
-                        if (!isKingInCheck(testBoard, COLORS.BLACK)) {
-                            bestMove = move;
-                            bestMove.from = pos;
-                            break;
-                        }
-                    }
-                    if (bestMove) break;
-                }
-                if (bestMove) executeMove(bestMove);
-                aiThinking = false;
-            }, 250);
         }
 
         document.getElementById('undoBtn').addEventListener('click', undo);
